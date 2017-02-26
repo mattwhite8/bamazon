@@ -23,16 +23,17 @@ var viewProducts = function(){
 };
 
 var viewLowInventory = function(){
-	connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function(err, res){
+	connection.query("SELECT * FROM products WHERE stock_quantity <= ?",[parseInt(5)], function(err, res){
 		if(err) throw err;
 
-		if(res = []){
-			console.log("No inventory items are at or below a quantity of 5");
-		}else {
+		if(typeof res[0] !== 'undefined'){
 			for(var i = 0; i < res.length; i++){
 				console.log(`ID: ${res[i].item_id} | Product Name: ${res[i].product_name} | Department: ${res[i].department_name} | Price: ${parseFloat(res[i].price).toFixed(2)} | Quantity: ${res[i].stock_quantity}`);
 			};
-		}
+		}else {
+			console.log("No inventory items are at or below a quantity of 5");
+		};
+
 		start();
 	});
 };
