@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mattwhite8/bamazon#readme",
   "dependencies": {
+    "inquirer": "^3.0.4",
     "mysql": "^2.13.0",
     "prompt": "^1.0.0"
   }

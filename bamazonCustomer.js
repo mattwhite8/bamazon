@@ -40,7 +40,7 @@ var addToCart = function(){
 var checkOut = function(id, newQuantity, cost){
 	connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: newQuantity}, {item_id: id}], function(err, res){
 		if(err) throw err;
-		console.log(`Your total cost today was ${cost}`);
+		console.log(`Your total cost today was $${parseFloat(cost).toFixed(2)}`);
 		process.exit();
 	});
 };
@@ -51,7 +51,7 @@ connection.query("SELECT * FROM products", function(err, res){
 	console.log("======================");
 
 	for(var i = 0; i < res.length; i++){
-		console.log(`ID: ${res[i].item_id} | Product Name: ${res[i].product_name} | Department: ${res[i].department_name} | Price: ${res[i].price} | Quantity: ${res[i].stock_quantity}`);
+		console.log(`ID: ${res[i].item_id} | Product Name: ${res[i].product_name} | Department: ${res[i].department_name} | Price: ${parseFloat(res[i].price).toFixed(2)} | Quantity: ${res[i].stock_quantity}`);
 	};
 
 	addToCart();
