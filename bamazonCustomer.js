@@ -25,9 +25,10 @@ var addToCart = function(){
 			if(err) throw err;
 
 			if(res[0].stock_quantity >= quantity){
+				var productSales = res[0].product_sales || 0.00;
 				var newQuantity = res[0].stock_quantity - quantity;
 				var cost = res[0].price * quantity;
-				checkOut(id, newQuantity, cost);
+				checkOut(id, productSales, newQuantity, cost);
 			}else {
 				console.log("Insufficient quantity!");
 				process.exit();
@@ -37,8 +38,8 @@ var addToCart = function(){
 	});
 };
 
-var checkOut = function(id, newQuantity, cost){
-	connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: newQuantity}, {item_id: id}], function(err, res){
+var checkOut = function(id, productSales, newQuantity, cost){
+	connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: newQuantity, product_sales: productSales + cost}, {item_id: id}], function(err, res){
 		if(err) throw err;
 		console.log(`Your total cost today was $${parseFloat(cost).toFixed(2)}`);
 		process.exit();
@@ -57,3 +58,18 @@ connection.query("SELECT * FROM products", function(err, res){
 	addToCart();
 });
 
+
+		// connection.query("SELECT * FROM products WHERE item_id= ?", [1], function(err, res){
+		// 	if(err) throw err;
+		// 	var test = res[0].product_sales || parseFloat(0.00);
+		// 	console.log(test);
+		// 	// if(res[0].stock_quantity >= quantity){
+		// 	// 	var productSales = res[0].product_sales;
+		// 	// 	var newQuantity = res[0].stock_quantity - quantity;
+		// 	// 	var cost = res[0].price * quantity;
+		// 	// 	checkOut(id, quantity, productSales, newQuantity, cost);
+		// 	// }else {
+		// 	// 	console.log("Insufficient quantity!");
+		// 	// 	process.exit();
+		// 	// }
+		// });
