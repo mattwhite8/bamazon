@@ -1,7 +1,11 @@
+//include module for MySQL
 var mysql = require('mysql');
+//creates a menu for the user
 var inquirer = require('inquirer');
+//include prompt module to take user input 
 var prompt = require('prompt');
 
+//connect to database created in MySQL Workbench
 var connection = mysql.createConnection({
 	host: '127.0.0.1',
 	port: '8889',
@@ -11,6 +15,7 @@ var connection = mysql.createConnection({
 	database: 'bamazon'
 });
 
+//select all rows from products database and loop through them to display
 var viewProducts = function(){
 	connection.query("SELECT * FROM products", function(err, res){
 		if(err) throw err;
@@ -22,6 +27,7 @@ var viewProducts = function(){
 	});
 };
 
+//select all rows from products database where the stock_quantity is less than or equal to 5
 var viewLowInventory = function(){
 	connection.query("SELECT * FROM products WHERE stock_quantity <= ?",[parseInt(5)], function(err, res){
 		if(err) throw err;
@@ -43,6 +49,7 @@ var addToInventory = function(){
 	console.log("Add to which item?");
 	console.log('');
 
+	//select all rows from products and display them, allow the user to select the id and quantity to add
 	connection.query("SELECT * FROM products", function(err, res){
 		if(err) throw err;
 
@@ -59,10 +66,12 @@ var addToInventory = function(){
 			var id = res.id;
 			var quantity = res.quantity;
 
+			//take the id provided and return the row that matches
 			connection.query("SELECT * FROM products WHERE item_id= ?", [id], function(err, res){
 				if(err) throw err;
-
+				//add the existing quantity and the quantity derived from prompt
 				var newQuantity = parseInt(res[0].stock_quantity) + parseInt(quantity);
+				//pass that data into updateInventory
 				updateInventory(id, newQuantity);
 			});
 		});
@@ -71,6 +80,7 @@ var addToInventory = function(){
 
 };
 
+//update the products database, set the new stock_quantity where the item_id matches the id passed in
 var updateInventory = function(id, newQuantity){
 	connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: newQuantity}, {item_id: id}], function(err, res){
 		if(err) throw err;
@@ -78,6 +88,7 @@ var updateInventory = function(id, newQuantity){
 	});
 };
 
+//use inquirer to take relevant info from the user
 var addNewProduct = function(){
 	inquirer.prompt([
 
@@ -110,11 +121,13 @@ var addNewProduct = function(){
 		}
 
 	]).then(function(data){
+		//pass the user supplied data into variables
 		var product = data.product;
 		var department = data.department;
 		var price = parseFloat(data.price).toFixed(2);
 		var quantity = parseInt(data.quantity);
 
+		//insert a new row into products database using the user supplied data
 		connection.query("INSERT INTO products SET ?", {product_name: product, department_name: department, price: price, stock_quantity: quantity}, function(err, res){
 			if(err) throw err;
 			viewProducts();
@@ -122,6 +135,7 @@ var addNewProduct = function(){
 	});
 };
 
+//run start() on start and allow the user to choose their desired option
 var start = function(){
 	console.log('');
 	console.log("=====================");

@@ -1,8 +1,13 @@
+//include module for MySQL
 var mysql = require('mysql');
+//creates a menu for the user
 var inquirer = require('inquirer');
+//include prompt module to take user input 
 var prompt = require('prompt');
+//console table will print out the results in the terminal 
 require('console.table');
 
+//connect to database created in MySQL Workbench
 var connection = mysql.createConnection({
 	host: '127.0.0.1',
 	port: '8889',
@@ -13,20 +18,23 @@ var connection = mysql.createConnection({
 });
 
 var viewDepartment = function(){
+	//select all rows from the departments database
 	connection.query("SELECT * FROM departments", function(err, res){
 		var arr = [];
+		//loop through data, pushing the relevant info into the arr to be read by console.table
 		for(var i = 0; i < res.length; i++){
 			arr.push({Id: res[i].department_id,
 					  Department: res[i].department_name, 
 					  Overhead: parseFloat(res[i].over_head_costs).toFixed(2),
 					  Sales: parseFloat(res[i].total_sales).toFixed(2),
 					  Profit: parseFloat(res[i].total_sales - res[i].over_head_costs).toFixed(2)});
-		};
+					 };
 		console.table(arr);
 		start();
 	});
 };
 
+//use prompt to pass the relevant info into an insert statement 
 var createDepartment = function(){
 	prompt.start();
 
@@ -41,6 +49,7 @@ var createDepartment = function(){
 	});
 };
 
+//run start() on start and allow the user to choose their desired option
 var start = function(){
 	console.log('');
 	console.log("=====================");
